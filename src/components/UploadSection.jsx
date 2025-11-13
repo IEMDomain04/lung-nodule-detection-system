@@ -63,10 +63,7 @@ export function UploadSection() {
           accept=".jpg,.jpeg,.png"
           aria-label="Choose X-ray image"
         />
-        <Button
-          className="cursor-pointer bg-[#0EA5E9] hover:bg-[#38BDF8] text-white transition-colors"
-          onClick={openFileDialog}
-        >
+        <Button className="cursor-pointer bg-[#0EA5E9] text-white transition-colors hover:bg-[#0d96d4] active:bg-[#0a74a3]" onClick={openFileDialog}>
           <Upload className="mr-2 h-4 w-4" />
           Upload
         </Button>
@@ -81,7 +78,7 @@ export function UploadSection() {
 
       {/* Drag and Drop Area */}
       <div
-        className={`choosefile-img border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+        className={`choosefile-img border-2 border-dashed rounded-lg p-8 text-center transition-colors hover:border-[#38BDF8] hover:bg-[#0EA5E9]/10 active:bg-[#1d2633] ${
           isDragging
             ? 'border-[#38BDF8] bg-[#0EA5E9]/10'
             : 'border-[#374151] bg-[#1F2937]'
@@ -116,7 +113,7 @@ export function UploadSection() {
       {/* Classify Button */}
       <div className="pt-4">
         <Button
-          className="w-full cursor-pointer bg-[#14B8A6] hover:bg-[#10A39B] text-white font-medium text-lg transition-all"
+          className="w-full cursor-pointer bg-[#14B8A6] hover:bg-[#10A39B] active:bg-[#0c7d77] text-white font-medium text-lg transition-all"
           size="lg"
         >
           Classify Image
