@@ -7,8 +7,11 @@ import SimpleITK as sitk
 from torchvision import transforms
 from collections import OrderedDict
 
+from wsod_model import WSODModel
+
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODEL_PATH = "best_wsod_resnet50.pth"
+# MODEL_PATH = "best_wsod_resnet50.pth"
+MODEL_PATH = "resnet50-baseline-nodule.pth"
 CLASS_NAMES = ["No Nodule", "Nodule Detected"]
 
 # ============================================================
@@ -16,6 +19,8 @@ CLASS_NAMES = ["No Nodule", "Nodule Detected"]
 # ============================================================
 print("Loading model...")
 model = timm.create_model("resnet50", pretrained=False, num_classes=2)
+# base_model = timm.create_model('resnet50', pretrained=False, num_classes=2)
+# model = WSODModel(base_model, num_classes=2)
 
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"Model file not found: {MODEL_PATH}")
