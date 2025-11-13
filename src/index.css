@@ -5,6 +5,16 @@ body {
   background-color: #1F2937;
 }
 
+.choosefile-img:hover {
+  background-color: #fff9f9;
+}
+
+.choosefile-img:active {
+  background-color: #ffefef;
+}
+
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
