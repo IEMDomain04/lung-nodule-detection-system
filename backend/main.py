@@ -3,7 +3,8 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile
 import shutil
-from predict_nodule import predict_image
+from predict_nodule_spatial import predict_image
+# from predict_nodule import predict_image
 
 app = FastAPI()
 
