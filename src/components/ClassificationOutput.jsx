@@ -4,7 +4,7 @@ import { ImageIcon, ZoomIn, ZoomOut, Maximize2, Eye, EyeOff } from 'lucide-react
 import { useState, useRef } from 'react';
 import { Button } from './ui/button';
 
-export function ClassificationOutput({ imageSrc, prediction }) {
+export function ClassificationOutput({ imageSrc, prediction, loading }) {
   // Zoom and pan state
   const [zoom, setZoom] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -98,33 +98,53 @@ export function ClassificationOutput({ imageSrc, prediction }) {
   
   return (
     <div className="w-full">
-      {/* Classification Results Summary - Compact at top */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-6 bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] rounded-xl border border-[#374151]">
-        <div>
-          <p className="text-sm text-[#E5E7EB] mb-2">Prediction:</p>
-          <Badge 
-            variant="outline" 
-            className={`text-lg px-4 py-2 font-semibold ${badgeColor}`}
-          >
-            {predictedClass}
-          </Badge>
-        </div>
-        
-        <div>
-          <p className="text-sm text-[#E5E7EB] mb-2">Confidence Score:</p>
-          <div className="flex items-center gap-3">
-            <div className="flex-1 bg-[#374151] rounded-full h-4 overflow-hidden">
-              <div 
-                className={`${progressBarColor} h-full rounded-full transition-all duration-500`}
-                style={{ width: confPercent != null ? `${confPercent}%` : '0%' }} 
-              />
+      {/* Classification Results Summary - Only show after classification */}
+      {prediction && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-6 bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] rounded-xl border border-[#374151]">
+          <div>
+            <p className="text-sm text-[#E5E7EB] mb-2">Prediction:</p>
+            <Badge 
+              variant="outline" 
+              className={`text-lg px-4 py-2 font-semibold ${badgeColor}`}
+            >
+              {predictedClass}
+            </Badge>
+          </div>
+          
+          <div>
+            <p className="text-sm text-[#E5E7EB] mb-2">Confidence Score:</p>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 bg-[#374151] rounded-full h-4 overflow-hidden">
+                <div 
+                  className={`${progressBarColor} h-full rounded-full transition-all duration-500`}
+                  style={{ width: confPercent != null ? `${confPercent}%` : '0%' }} 
+                />
+              </div>
+              <span className="text-base text-[#9CA3AF] min-w-16 font-medium">
+                {confPercent != null ? `${confPercent}%` : '--%'}
+              </span>
             </div>
-            <span className="text-base text-[#9CA3AF] min-w-16 font-medium">
-              {confPercent != null ? `${confPercent}%` : '--%'}
-            </span>
           </div>
         </div>
-      </div>
+      )}
+      
+      {/* Preview Status Banner - Show when image selected but not classified */}
+      {imageSrc && !prediction && !loading && (
+        <div className="w-full mb-4 p-4 bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-lg">
+          <p className="text-sm text-[#38BDF8] text-center">
+            📷 <strong>Preview Mode:</strong> Image uploaded. Click "Classify" button to analyze for nodule detection.
+          </p>
+        </div>
+      )}
+      
+      {/* Loading Banner - Show when processing */}
+      {loading && (
+        <div className="w-full mb-4 p-4 bg-[#F59E0B]/10 border border-[#F59E0B]/30 rounded-lg">
+          <p className="text-sm text-[#F59E0B] text-center">
+            ⏳ <strong>Processing:</strong> {prediction ? 'Analyzing image...' : 'Loading preview...'}
+          </p>
+        </div>
+      )}
       
       {/* Zoom Controls */}
       {displayImage && (
@@ -221,12 +241,15 @@ export function ClassificationOutput({ imageSrc, prediction }) {
             <p className="text-sm text-[#E5E7EB]">
               No image uploaded yet
             </p>
+            <p className="text-xs text-[#9CA3AF] mt-2">
+              Use "Choose File" button above to upload a chest X-ray or MHA file
+            </p>
           </div>
         )}
       </div>
       
-      {/* Heatmap Status Indicator */}
-      {hasHeatmapData && displayImage && (
+      {/* Heatmap Status Indicator - Only show after classification */}
+      {hasHeatmapData && displayImage && prediction && (
         <div className="w-full p-3 bg-[#374151]/30 border border-[#374151] rounded-lg">
           <p className="text-sm text-[#E5E7EB] text-center">
             {showHeatmap ? (

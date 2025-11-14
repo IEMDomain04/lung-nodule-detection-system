@@ -56,6 +56,25 @@ def root():
         "active_predictor": PREDICT_MODULE
     }
 
+@app.post("/preview")
+async def preview(file: UploadFile = File(...)):
+    """Generate preview image without classification"""
+    suffix = file.filename.split('.')[-1]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{suffix}") as tmp:
+        shutil.copyfileobj(file.file, tmp)
+        temp_path = tmp.name
+
+    try:
+        # Import the helper function from predict_nodule_spatial
+        from predict_nodule_spatial import mha_to_base64_png
+        preview_image = mha_to_base64_png(temp_path)
+        result = {"preview_image": preview_image}
+    finally:
+        tmp.close()
+        os.remove(temp_path)
+
+    return result
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     suffix = file.filename.split('.')[-1]

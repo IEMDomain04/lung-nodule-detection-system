@@ -10,12 +10,42 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+      // Clear previous prediction when new file is selected
+      setPrediction(null);
+      
+      // For .mha files, we need to convert them on the backend for preview
+      // For regular image files, we can create a local preview
+      if (file.name.toLowerCase().endsWith('.mha')) {
+        // Send to backend to get preview
+        setLoading(true);
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await fetch("http://127.0.0.1:8000/preview", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+          if (result.preview_image) {
+            setPreviewUrl(result.preview_image);
+          }
+        } catch (err) {
+          console.error("Preview generation failed:", err);
+          setPreviewUrl(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // For regular images (jpg, png), create local preview
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+      }
     }
   };
 
@@ -72,7 +102,11 @@ export default function App() {
             </div>
 
             <div className="flex-1">
-              <ClassificationOutput imageSrc={previewUrl} prediction={prediction} />
+              <ClassificationOutput 
+                imageSrc={previewUrl} 
+                prediction={prediction}
+                loading={loading}
+              />
             </div>
 
             {/* Status message */}
