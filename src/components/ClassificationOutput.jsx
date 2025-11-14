@@ -5,12 +5,15 @@ import { ImageIcon } from 'lucide-react';
 export function ClassificationOutput({ imageSrc, prediction }) {
   // Extract prediction values with defaults
   const predictedClass = prediction?.prediction || prediction?.class || '--';
-  const confidence = prediction?.confidence != null ? prediction.confidence : null;
-  
+  const confidence = prediction?.confidence != null ? Number(prediction.confidence) : null;
+
   // Normalize confidence to percentage (handle both 0-1 and 0-100 formats)
-  const confPercent = confidence != null 
-    ? (confidence > 1 ? Math.round(confidence) : Math.round(confidence * 100))
+  // Keep a numeric value for clamping and a formatted string with 2 decimals
+  const confPercentNumber = confidence != null
+    ? (confidence > 1 ? confidence : confidence * 100)
     : null;
+  const confPercentClamped = confPercentNumber != null ? Math.max(0, Math.min(100, confPercentNumber)) : null;
+  const confPercent = confPercentClamped != null ? confPercentClamped.toFixed(2) : null;
   
   // Determine if nodule is detected (case-insensitive check)
   const hasNodule = predictedClass.toLowerCase().includes('nodule') && 
@@ -87,9 +90,6 @@ export function ClassificationOutput({ imageSrc, prediction }) {
             </div>
           )}
         </div>
-
-        
-
       </CardContent>
     </Card>
   );
