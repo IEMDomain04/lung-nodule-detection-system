@@ -84,16 +84,16 @@ export function UploadSection({
     <Card className="bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] text-[#F9FAFB] border-none shadow-lg">
 
       {/* Title Section */}
-      <CardHeader>
-        <CardTitle className="text-[#F9FAFB]">Upload X-ray Image</CardTitle>
-        <CardDescription className="text-[#9CA3AF]">
-          Select a chest X-ray image file to classify
+      <CardHeader className="pb-3">
+        <CardTitle className="text-[#F9FAFB] text-lg">Upload X-ray Image</CardTitle>
+        <CardDescription className="text-[#9CA3AF] text-sm">
+          Select a chest X-ray or MHA file to analyze
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
 
-        {/* Upload Button */}
+        {/* Upload Button and File Name - Single Row */}
         <div className="flex items-center gap-4">
           <input
             className="hidden"
@@ -103,22 +103,25 @@ export function UploadSection({
             accept=".jpg,.jpeg,.png,.mha"
             aria-label="Choose X-ray image"
           />
-          <Button className="cursor-pointer bg-[#0EA5E9] text-white transition-colors hover:bg-[#0d96d4] active:bg-[#0a74a3]" onClick={openFileDialog}>
+          <Button 
+            className="cursor-pointer bg-[#0EA5E9] text-white transition-colors hover:bg-[#0d96d4] active:bg-[#0a74a3]" 
+            onClick={openFileDialog}
+            size="sm"
+          >
             <Upload className="mr-2 h-4 w-4" />
-            Upload
+            Choose File
           </Button>
+          
+          {selectedFile && (
+            <p className="text-sm text-[#E5E7EB] truncate flex-1">
+              <strong className="font-bold text-[#38BDF8]">Selected:</strong> {selectedFile.name}
+            </p>
+          )}
         </div>
 
-        {/* Selected File Name */}
-        {selectedFile && (
-          <p className="text-sm text-[#E5E7EB]">
-            <strong className="font-bold text-[#38BDF8]">Selected:</strong> {selectedFile.name}
-          </p>
-        )}
-
-        {/* Drag and Drop Area */}
+        {/* Compact Drag and Drop Area */}
         <div
-          className={`choosefile-img border-2 border-dashed rounded-lg p-8 text-center transition-colors hover:border-[#38BDF8] hover:bg-[#0EA5E9]/10 active:bg-[#1d2633] ${isDragging
+          className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors hover:border-[#38BDF8] hover:bg-[#0EA5E9]/10 ${isDragging
             ? 'border-[#38BDF8] bg-[#0EA5E9]/10'
             : 'border-[#374151] bg-[#1F2937]'
             } cursor-pointer`}
@@ -131,34 +134,36 @@ export function UploadSection({
           tabIndex={0}
         >
           {previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="preview"
-              className="mx-auto max-h-60 object-contain mb-4 rounded-lg shadow-md"
-            />
+            <div className="flex items-center justify-center gap-3">
+              <img
+                src={previewUrl}
+                alt="preview"
+                className="h-16 w-16 object-cover rounded border-2 border-[#38BDF8]"
+              />
+              <div className="text-left">
+                <p className="text-sm text-[#E5E7EB] font-medium">Image uploaded</p>
+                <p className="text-xs text-[#9CA3AF]">Click "Classify Image" to analyze</p>
+              </div>
+            </div>
           ) : (
-            <>
-              <Upload className="mx-auto h-12 w-12 text-[#38BDF8] mb-4" />
-              <p className="text-sm text-[#E5E7EB] mb-2">
-                Drag and drop your X-ray image here
-              </p>
-              <p className="text-xs text-[#9CA3AF]">
-                Supported formats: JPG, JPEG, PNG
-              </p>
-            </>
+            <div className="flex items-center justify-center gap-3">
+              <Upload className="h-8 w-8 text-[#38BDF8]" />
+              <div className="text-left">
+                <p className="text-sm text-[#E5E7EB]">Drag & drop or click to upload</p>
+                <p className="text-xs text-[#9CA3AF]">JPG, PNG, MHA formats</p>
+              </div>
+            </div>
           )}
         </div>
 
         {/* Classify Button */}
-        <div className="pt-4">
-          <Button
-            className="w-full cursor-pointer bg-[#14B8A6] hover:bg-[#10A39B] active:bg-[#0c7d77] text-white font-medium text-lg transition-all"
-            size="lg"
-            onClick={handleClassify}
-          >
-            {loading ? "Classifying..." : "Classify Image"}
-          </Button>
-        </div>
+        <Button
+          className="w-full cursor-pointer bg-[#14B8A6] hover:bg-[#10A39B] active:bg-[#0c7d77] text-white font-medium transition-all"
+          onClick={handleClassify}
+          disabled={!selectedFile || loading}
+        >
+          {loading ? "Analyzing..." : "Classify Image"}
+        </Button>
 
       </CardContent>
     </Card>

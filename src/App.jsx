@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Header } from './components/Header';
 import { UploadSection } from './components/UploadSection';
 import { ClassificationOutput } from './components/ClassificationOutput';
@@ -8,59 +8,92 @@ export default function App() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const handleClassify = async () => {
+    if (!selectedFile) return;
+    setLoading(true);
+    setPrediction(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      setPrediction(result);
+      
+      // Update preview with backend-generated image if available
+      if (result.preview_image) {
+        setPreviewUrl(result.preview_image);
+      }
+    } catch (err) {
+      console.error("Prediction failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#111827] text-white flex flex-col font-sans">
-      {/* Header */}
-      <Header />
+      {/* Header with Upload Controls */}
+      <Header 
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
+        fileInputRef={fileInputRef}
+        handleFileChange={handleFileChange}
+        handleClassify={handleClassify}
+        loading={loading}
+      />
 
-      <main className="container mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8 items-start justify-center">
-        
-        {/* Left panel — Upload and Preview */}
-        <section className="flex-1 w-full">
-          <div className="sticky top-6">
-            <UploadSection
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-              previewUrl={previewUrl}
-              setPreviewUrl={setPreviewUrl}
-              prediction={prediction}
-              setPrediction={setPrediction}
-              loading={loading}
-              setLoading={setLoading}
-            />
+      <main className="w-full px-6 py-6 flex-1">
+        {/* Results Section - Full Screen */}
+        <section className="w-full max-w-7xl mx-auto h-full">
+          <div className="bg-[#1F2937] rounded-2xl shadow-lg p-6 border border-[#2E3A59] h-full flex flex-col">
+            <div className="mb-4">
+              <h2 className="text-2xl font-semibold text-[#F9FAFB] mb-2 border-b border-[#374151] pb-2">
+                AI Analysis Result
+              </h2>
+              <p className="text-sm text-[#9CA3AF]">
+                The AI model highlights suspicious nodule regions in the uploaded chest X-ray or MHA image.
+              </p>
+            </div>
+
+            <div className="flex-1">
+              <ClassificationOutput imageSrc={previewUrl} prediction={prediction} />
+            </div>
+
+            {/* Status message */}
+            {loading && (
+              <p className="text-[#38BDF8] mt-4 text-center font-medium">
+                Analyzing image... please wait.
+              </p>
+            )}
+            {!loading && !prediction && (
+              <p className="text-[#9CA3AF] mt-4 text-center">
+                Upload an image using the controls above to begin analysis.
+              </p>
+            )}
           </div>
-        </section>
-
-        {/* Right panel — Results and Analysis */}
-        <section className="flex-1 w-full bg-[#1F2937] rounded-2xl shadow-lg p-6 border border-[#2E3A59]">
-          <h2 className="text-2xl font-semibold text-[#F9FAFB] mb-4 border-b border-[#374151] pb-2">
-            AI Analysis Result
-          </h2>
-          <p className="text-sm text-[#9CA3AF] mb-6">
-            The AI model highlights suspicious nodule regions in the uploaded chest X-ray or MHA image.
-          </p>
-
-          <ClassificationOutput imageSrc={previewUrl} prediction={prediction} />
-
-          {/* Status message */}
-          {loading && (
-            <p className="text-[#38BDF8] mt-4 text-center font-medium">
-              Analyzing image... please wait.
-            </p>
-          )}
-          {!loading && !prediction && (
-            <p className="text-[#9CA3AF] mt-4 text-center">
-              Upload an image to begin analysis.
-            </p>
-          )}
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t py-6 bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827]">
+      <footer className="mt-4 border-t py-3 bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827]">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-[#F9FAFB] font-semibold">
+          <p className="text-[#F9FAFB] font-semibold text-sm">
             Nodule Detection System – Enhanced ResNet-50 + CBAM + ViT
           </p>
           <p className="text-xs text-[#9CA3AF] mt-1">
