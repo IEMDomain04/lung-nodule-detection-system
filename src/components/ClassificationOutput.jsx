@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { ImageIcon, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { ImageIcon, ZoomIn, ZoomOut, Maximize2, Eye, EyeOff } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { Button } from './ui/button';
 
@@ -12,12 +12,19 @@ export function ClassificationOutput({ imageSrc, prediction }) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef(null);
 
+  // Heatmap toggle state
+  const [showHeatmap, setShowHeatmap] = useState(true);
+
   // Extract prediction values with defaults
   const predictedClass = prediction?.prediction || prediction?.class || '--';
   const confidence = prediction?.confidence != null ? Number(prediction.confidence) : null;
 
   // Use backend preview image if available, otherwise fall back to imageSrc
-  const displayImage = prediction?.preview_image || imageSrc;
+  // Toggle between heatmap and original based on showHeatmap state
+  const hasHeatmapData = prediction?.has_heatmap && prediction?.preview_image && prediction?.original_image;
+  const displayImage = hasHeatmapData 
+    ? (showHeatmap ? prediction.preview_image : prediction.original_image)
+    : (prediction?.preview_image || imageSrc);
 
   // Normalize confidence to percentage (handle both 0-1 and 0-100 formats)
   // Keep a numeric value for clamping and a formatted string with 2 decimals
@@ -49,6 +56,8 @@ export function ClassificationOutput({ imageSrc, prediction }) {
 
   const handleMouseDown = (e) => {
     if (!displayImage) return;
+    
+    // Start panning
     setIsDragging(true);
     setDragStart({
       x: e.clientX - position.x,
@@ -57,11 +66,13 @@ export function ClassificationOutput({ imageSrc, prediction }) {
   };
 
   const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    setPosition({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
+    if (isDragging) {
+      // Pan the image
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+    }
   };
 
   const handleMouseUp = () => {
@@ -79,6 +90,10 @@ export function ClassificationOutput({ imageSrc, prediction }) {
   const handleReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
+  };
+
+  const toggleHeatmap = () => {
+    setShowHeatmap(!showHeatmap);
   };
   
   return (
@@ -157,6 +172,33 @@ export function ClassificationOutput({ imageSrc, prediction }) {
                 <Maximize2 className="h-4 w-4 mr-1" />
                 Reset
               </Button>
+              {hasHeatmapData && (
+                <>
+                  <div className="h-6 w-px bg-[#374151] mx-1"></div>
+                  <Button
+                    onClick={toggleHeatmap}
+                    size="sm"
+                    variant="outline"
+                    className={`${
+                      showHeatmap 
+                        ? 'bg-[#EF4444] border-[#EF4444] text-white hover:bg-[#DC2626]' 
+                        : 'bg-[#10B981] border-[#10B981] text-white hover:bg-[#059669]'
+                    }`}
+                  >
+                    {showHeatmap ? (
+                      <>
+                        <Eye className="h-4 w-4 mr-1" />
+                        Show Original
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="h-4 w-4 mr-1" />
+                        Show Heatmap
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
             </div>
             <span className="text-sm text-[#9CA3AF] font-medium">
               Zoom: {Math.round(zoom * 100)}%
@@ -173,7 +215,9 @@ export function ClassificationOutput({ imageSrc, prediction }) {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          style={{ cursor: isDragging ? 'grabbing' : displayImage ? 'grab' : 'default' }}
+          style={{ 
+            cursor: isDragging ? 'grabbing' : displayImage ? 'grab' : 'default'
+          }}
         >
           {displayImage ? (
             <img 
