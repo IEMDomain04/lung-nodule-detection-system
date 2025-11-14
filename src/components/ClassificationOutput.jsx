@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { ImageIcon, ZoomIn, ZoomOut, Maximize2, Eye, EyeOff } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
 
 export function ClassificationOutput({ imageSrc, prediction, loading }) {
@@ -47,13 +47,25 @@ export function ClassificationOutput({ imageSrc, prediction, loading }) {
   
   const progressBarColor = hasNodule ? 'bg-red-400' : 'bg-green-400';
 
-  // Zoom and pan handlers
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setZoom((prev) => Math.min(Math.max(0.5, prev + delta), 5));
-  };
+  // Add wheel event listener with passive: false to allow preventDefault
+  useEffect(() => {
+    const container = imageContainerRef.current;
+    if (!container) return;
 
+    const wheelHandler = (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoom((prev) => Math.min(Math.max(0.5, prev + delta), 5));
+    };
+
+    container.addEventListener('wheel', wheelHandler, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', wheelHandler);
+    };
+  }, []);
+
+  // Zoom and pan handlers
   const handleMouseDown = (e) => {
     if (!displayImage) return;
     
@@ -215,7 +227,6 @@ export function ClassificationOutput({ imageSrc, prediction, loading }) {
       <div 
         ref={imageContainerRef}
         className="relative w-full h-[82vh] bg-[#111827] rounded-lg border border-[#374151] flex items-center justify-center mb-4 overflow-hidden"
-        onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
