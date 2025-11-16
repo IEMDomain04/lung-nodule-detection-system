@@ -100,7 +100,7 @@ export default function App() {
       <footer className="border-t py-2 bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] flex-shrink-0">
         <div className="container mx-auto px-4 text-center">
           <p className="text-[#F9FAFB] font-semibold text-xs">
-            Nodule Detection System – Enhanced ResNet-50 + CBAM + ViT
+            Nodule Detection System – Enhanced ResNet-50 with Lightweight Transformer and Spatial Attention
           </p>
         </div>
       </footer>
