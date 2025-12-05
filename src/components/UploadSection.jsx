@@ -81,7 +81,7 @@ export function UploadSection({
 
 
   return (
-    <Card className="bg-gradient-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] text-[#F9FAFB] border-none shadow-lg">
+    <Card className="bg-linear-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] text-[#F9FAFB] border-none shadow-lg">
 
       {/* Title Section */}
       <CardHeader className="pb-3">
