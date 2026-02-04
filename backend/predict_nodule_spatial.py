@@ -49,24 +49,30 @@ print("Model loaded successfully.")
 # HELPER FUNCTION
 # ============================================================
 def mha_to_base64_png(image_path):
-    """Convert .mha image to base64-encoded PNG data URL for browser display."""
-    image = sitk.ReadImage(image_path)
-    img_array = sitk.GetArrayFromImage(image)
-    
-    # Take first slice if 3D
-    if len(img_array.shape) == 3:
-        img_array = img_array[0]
-    
-    # Normalize to 0-255
-    img_array = img_array.astype(np.float32)
-    img_min, img_max = img_array.min(), img_array.max()
-    if img_max > img_min:
-        img_array = ((img_array - img_min) / (img_max - img_min) * 255).astype(np.uint8)
+    """Convert image to base64-encoded PNG data URL for browser display."""
+    # Handle both .mha and regular image formats
+    if image_path.lower().endswith('.mha'):
+        image = sitk.ReadImage(image_path)
+        img_array = sitk.GetArrayFromImage(image)
+        
+        # Take first slice if 3D
+        if len(img_array.shape) == 3:
+            img_array = img_array[0]
+        
+        # Normalize to 0-255
+        img_array = img_array.astype(np.float32)
+        img_min, img_max = img_array.min(), img_array.max()
+        if img_max > img_min:
+            img_array = ((img_array - img_min) / (img_max - img_min) * 255).astype(np.uint8)
+        else:
+            img_array = np.zeros_like(img_array, dtype=np.uint8)
+        
+        pil_img = Image.fromarray(img_array, mode='L')
     else:
-        img_array = np.zeros_like(img_array, dtype=np.uint8)
+        # Handle standard image formats (PNG, JPG, etc.)
+        pil_img = Image.open(image_path).convert('L')
     
-    # Convert to PIL Image and save as PNG to bytes
-    pil_img = Image.fromarray(img_array, mode='L')
+    # Convert to PNG bytes (preserving original dimensions)
     buf = io.BytesIO()
     pil_img.save(buf, format='PNG')
     buf.seek(0)
@@ -77,25 +83,30 @@ def mha_to_base64_png(image_path):
 
 
 def load_mha_image(image_path):
-    """Load and preprocess .mha image into a tensor."""
-    image = sitk.ReadImage(image_path)
-    img_array = sitk.GetArrayFromImage(image)
+    """Load and preprocess image into a tensor (maintains aspect ratio internally)."""
+    # Handle both .mha and regular image formats
+    if image_path.lower().endswith('.mha'):
+        image = sitk.ReadImage(image_path)
+        img_array = sitk.GetArrayFromImage(image)
 
-    if len(img_array.shape) == 3:
-        img_array = img_array[0]
+        if len(img_array.shape) == 3:
+            img_array = img_array[0]
 
-    img_array = img_array.astype(np.float32)
-    img_min, img_max = img_array.min(), img_array.max()
-    if img_max > img_min:
-        img_array = ((img_array - img_min) / (img_max - img_min) * 255).astype(np.uint8)
+        img_array = img_array.astype(np.float32)
+        img_min, img_max = img_array.min(), img_array.max()
+        if img_max > img_min:
+            img_array = ((img_array - img_min) / (img_max - img_min) * 255).astype(np.uint8)
+        else:
+            img_array = np.zeros_like(img_array, dtype=np.uint8)
+
+        img_array = np.stack([img_array, img_array, img_array], axis=-1)
+        image = Image.fromarray(img_array)
     else:
-        img_array = np.zeros_like(img_array, dtype=np.uint8)
-
-    img_array = np.stack([img_array, img_array, img_array], axis=-1)
-    image = Image.fromarray(img_array)
+        # Handle standard image formats
+        image = Image.open(image_path).convert('RGB')
 
     transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+        transforms.Resize((224, 224)),  # Model requires 224x224
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225]),
@@ -108,32 +119,40 @@ def generate_heatmap_overlay(image_path, attention_map):
     Generate heatmap overlay on the original image.
     
     Args:
-        image_path: Path to the original .mha image
+        image_path: Path to the original image
         attention_map: 2D numpy array (HxW) with attention values [0-1]
     
     Returns:
         Base64 encoded PNG with heatmap overlay
     """
-    # Load original image
-    image = sitk.ReadImage(image_path)
-    img_array = sitk.GetArrayFromImage(image)
-    
-    if len(img_array.shape) == 3:
-        img_array = img_array[0]
-    
-    # Normalize original image to 0-255
-    img_array = img_array.astype(np.float32)
-    img_min, img_max = img_array.min(), img_array.max()
-    if img_max > img_min:
-        img_array = ((img_array - img_min) / (img_max - img_min) * 255).astype(np.uint8)
+    # Load original image (handle both .mha and standard formats)
+    if image_path.lower().endswith('.mha'):
+        image = sitk.ReadImage(image_path)
+        img_array = sitk.GetArrayFromImage(image)
+        
+        if len(img_array.shape) == 3:
+            img_array = img_array[0]
+        
+        # Normalize original image to 0-255
+        img_array = img_array.astype(np.float32)
+        img_min, img_max = img_array.min(), img_array.max()
+        if img_max > img_min:
+            img_array = ((img_array - img_min) / (img_max - img_min) * 255).astype(np.uint8)
+        else:
+            img_array = np.zeros_like(img_array, dtype=np.uint8)
+        
+        # Convert grayscale to RGB
+        img_rgb = cv2.cvtColor(img_array, cv2.COLOR_GRAY2RGB)
     else:
-        img_array = np.zeros_like(img_array, dtype=np.uint8)
+        # Handle standard image formats
+        pil_img = Image.open(image_path).convert('RGB')
+        img_rgb = np.array(pil_img)
     
-    # Convert grayscale to RGB
-    img_rgb = cv2.cvtColor(img_array, cv2.COLOR_GRAY2RGB)
+    # Get original dimensions
+    original_height, original_width = img_rgb.shape[:2]
     
-    # Resize attention map to match original image size
-    attention_resized = cv2.resize(attention_map, (img_array.shape[1], img_array.shape[0]), 
+    # Resize attention map to match original image size (not 224x224)
+    attention_resized = cv2.resize(attention_map, (original_width, original_height), 
                                    interpolation=cv2.INTER_LINEAR)
     
     # Normalize attention to 0-255
@@ -143,7 +162,7 @@ def generate_heatmap_overlay(image_path, attention_map):
     heatmap = cv2.applyColorMap(attention_norm, cv2.COLORMAP_JET)
     heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
     
-    # Blend original image with heatmap (70% original, 30% heatmap for visibility)
+    # Blend original image with heatmap (60% original, 40% heatmap for visibility)
     overlay = cv2.addWeighted(img_rgb, 0.6, heatmap, 0.4, 0)
     
     # Convert to PIL Image
