@@ -18,14 +18,14 @@ export function Header() {
               AI-powered chest X-ray analysis with attention visualization
             </p>
           </div>
-          <a
+          {/* <a
             href="https://drive.google.com/drive/folders/11uO51vWaSYIAp_i9ECxfg6f3l6z-oRJt?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="btn border border-e-blue-300 rounded cursor-pointer bg-blue-900 px-3 py-1 ml-10 inline-block"
           >
             Select image [.mha]
-          </a>
+          </a> */}
         </div>
       </div>
     </div>
