@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { ImageIcon, ZoomIn, ZoomOut, Maximize2, Eye, EyeOff, Upload } from 'lucide-react';
+import { ImageIcon, ZoomIn, ZoomOut, Maximize2, Eye, EyeOff, Upload, Cloud } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
 
@@ -195,15 +195,22 @@ export function ClassificationOutput({
               </p>
             </div>
           )}
-          
-          <Button 
-            className="btn-choosefile w-full bg-[#0EA5E9] text-white hover:bg-[#0d96d4] active:scale-90 cursor-pointer h-8 text-xs" 
-            onClick={openFileDialog}
-          >
-            <Upload className="h-3 w-3 mr-1.5" />
-            Choose File
-          </Button>
-          
+
+          <div className='w-full flex justify-center gap-2'>
+            <Button 
+              className="btn-choosefile bg-[#0EA5E9] text-white hover:bg-[#0d96d4] active:scale-90 cursor-pointer h-8 text-xs" 
+              onClick={openFileDialog}
+            >
+              <Upload />
+              Choose File
+            </Button>
+
+            <Button className="btn-choosefile bg-[#0038c6] text-white hover:bg-[#0d96d4] active:scale-90 cursor-pointer h-8 text-xs">
+              <Cloud />
+              Select Cloud File
+            </Button>
+          </div>
+
           <Button
             className="btn-classify w-full bg-[#14B8A6] hover:bg-[#10A39B] active:scale-90 text-white font-medium cursor-pointer h-8 text-xs"
             onClick={handleClassify}
