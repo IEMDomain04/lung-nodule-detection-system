@@ -29,8 +29,8 @@ export default function App() {
     <div className="h-screen bg-[#111827] text-white flex flex-col font-sans overflow-hidden">
       <Header />
 
-      <main className="flex-1 overflow-hidden px-4 py-3">
-        <div className="mx-auto flex gap-4 h-full">
+      <main className="flex-1 overflow-y-auto px-4 py-3">
+        <div className="mx-auto flex gap-4 h-full max-sm:flex-col max-sm:h-auto">
 
           <UploadSection
             selectedFile={selectedFile}
