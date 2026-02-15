@@ -34,6 +34,16 @@
   transform: scale(1.05);
 }
 
+.cloud-file:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 4px 15px rgb(30, 30, 185);
+}
+
+.cloud-file:active {
+  transform: scale(0.90);
+  box-shadow: 0px 4px 15px rgb(20, 20, 120);
+}
+
 body {
   background-color: #1F2937;
 }
