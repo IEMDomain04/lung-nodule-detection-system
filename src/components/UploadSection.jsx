@@ -230,7 +230,6 @@ export function UploadSection({
                   </Button>
                 </>
               )}
-              <div className="pt-1.5 text-center"><span className="text-[10px] text-[#9CA3AF]">Zoom: <span className="font-semibold text-[#E5E7EB]">{Math.round(zoom * 100)}%</span></span></div>
             </div>
           )}
           {error && <p className="text-xs text-red-400 text-center">{error}</p>}
