@@ -157,7 +157,7 @@ export function UploadSection({
         setPreviewUrl(result.preview_image);
       }
 
-      if (setShowRatingPopup) setShowRatingPopup(true);
+      // if (setShowRatingPopup) setShowRatingPopup(true);
     } catch (err) {
       setError("Prediction failed.");
     } finally {
