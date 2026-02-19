@@ -14,7 +14,8 @@ export function ClassificationOutput({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   
-  // We use a ref here to track the pinch distance without causing extra re-renders
+  const [imgDims, setImgDims] = useState({ w: 0, h: 0 });
+  
   const pinchDistanceRef = useRef(null);
   const imageContainerRef = useRef(null);
 
@@ -31,6 +32,44 @@ export function ClassificationOutput({
       }
   }
 
+  // --- THE "CENTER-EDGE" CLAMPING LOGIC ---
+  const getClampedPosition = (newX, newY, currentZoom) => {
+    if (!imageContainerRef.current) return { x: newX, y: newY };
+    const { clientWidth, clientHeight } = imageContainerRef.current;
+
+    let displayedW = clientWidth;
+    let displayedH = clientHeight;
+
+    // 1. Calculate the exact pixel size of the image on the screen
+    if (imgDims.w && imgDims.h) {
+      const containerRatio = clientWidth / clientHeight;
+      const imgRatio = imgDims.w / imgDims.h;
+
+      if (imgRatio > containerRatio) {
+        displayedW = clientWidth;
+        displayedH = clientWidth / imgRatio;
+      } else {
+        displayedH = clientHeight;
+        displayedW = clientHeight * imgRatio;
+      }
+    }
+
+    // 2. Allow dragging so the edge of the image stops exactly at the center of the container.
+    // This allows movement at 100% zoom, but prevents it from disappearing at 500% zoom!
+    const maxX = (displayedW * currentZoom) / 2;
+    const maxY = (displayedH * currentZoom) / 2;
+
+    return {
+      x: Math.min(Math.max(newX, -maxX), maxX),
+      y: Math.min(Math.max(newY, -maxY), maxY),
+    };
+  };
+
+  // Re-clamp position automatically if the user zooms out
+  useEffect(() => {
+    setPosition((prevPos) => getClampedPosition(prevPos.x, prevPos.y, zoom));
+  }, [zoom, imgDims]);
+
   // Handle Mouse Wheel for Desktop Zooming
   useEffect(() => {
     const container = imageContainerRef.current;
@@ -38,13 +77,13 @@ export function ClassificationOutput({
     const wheelHandler = (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoom((prev) => Math.min(Math.max(0.5, prev + delta), 5));
+      setZoom((prev) => Math.min(Math.max(1, prev + delta), 5));
     };
     container.addEventListener("wheel", wheelHandler, { passive: false });
     return () => container.removeEventListener("wheel", wheelHandler);
   }, [setZoom]);
 
-  // --- MOUSE HANDLERS (For Desktop) ---
+  // --- MOUSE HANDLERS ---
   const handleMouseDown = (e) => {
     if (!displayImage) return;
     setIsDragging(true);
@@ -53,28 +92,27 @@ export function ClassificationOutput({
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    const newX = e.clientX - dragStart.x;
+    const newY = e.clientY - dragStart.y;
+    setPosition(getClampedPosition(newX, newY, zoom));
   };
 
   const handleMouseUp = () => setIsDragging(false);
 
-  // --- TOUCH HANDLERS (For Tablets/Phones) ---
+  // --- TOUCH HANDLERS ---
   const handleTouchStart = (e) => {
     if (!displayImage) return;
 
     if (e.touches.length === 2) {
-      // 2 Fingers: Start Pinch-to-Zoom
-      setIsDragging(false); // Stop panning to avoid jumping
+      setIsDragging(false);
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       
-      // Calculate initial distance between fingers using Pythagorean theorem
       pinchDistanceRef.current = Math.hypot(
         touch1.clientX - touch2.clientX,
         touch1.clientY - touch2.clientY
       );
     } else if (e.touches.length === 1) {
-      // 1 Finger: Start Panning
       setIsDragging(true);
       const touch = e.touches[0];
       setDragStart({ x: touch.clientX - position.x, y: touch.clientY - position.y });
@@ -85,7 +123,6 @@ export function ClassificationOutput({
     if (!displayImage) return;
 
     if (e.touches.length === 2 && pinchDistanceRef.current) {
-      // 2 Fingers: Process Pinch-to-Zoom
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       
@@ -94,34 +131,34 @@ export function ClassificationOutput({
         touch1.clientY - touch2.clientY
       );
 
-      // Ratio of new distance to old distance dictates zoom change
       const distanceRatio = currentDistance / pinchDistanceRef.current;
 
       setZoom((prevZoom) => {
         const newZoom = prevZoom * distanceRatio;
-        // Keep zoom limits between 0.5x and 5.0x
-        return Math.min(Math.max(0.5, newZoom), 5); 
+        return Math.min(Math.max(1, newZoom), 5); 
       });
 
-      // Update baseline distance for continuous smooth zooming
       pinchDistanceRef.current = currentDistance;
 
     } else if (e.touches.length === 1 && isDragging) {
-      // 1 Finger: Process Panning
       const touch = e.touches[0];
-      setPosition({ x: touch.clientX - dragStart.x, y: touch.clientY - dragStart.y });
+      const newX = touch.clientX - dragStart.x;
+      const newY = touch.clientY - dragStart.y;
+      setPosition(getClampedPosition(newX, newY, zoom));
     }
   };
 
   const handleTouchEnd = (e) => {
-    // If we lift one finger from a pinch, stop zooming
     if (e.touches.length < 2) {
       pinchDistanceRef.current = null;
     }
-    // If no fingers are touching, stop dragging
     if (e.touches.length === 0) {
       setIsDragging(false);
     }
+  };
+
+  const onImageLoad = (e) => {
+    setImgDims({ w: e.target.naturalWidth, h: e.target.naturalHeight });
   };
 
   return (
@@ -139,13 +176,14 @@ export function ClassificationOutput({
         onTouchCancel={handleTouchEnd}
         style={{ 
           cursor: isDragging ? "grabbing" : displayImage ? "grab" : "default",
-          touchAction: "none" // CRITICAL: Stops browser from scrolling page while panning/pinching
+          touchAction: "none"
         }}
       >
         {displayImage ? (
           <img
             src={displayImage}
             alt="Preview"
+            onLoad={onImageLoad}
             className="w-full h-full object-contain select-none"
             style={{
               transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
