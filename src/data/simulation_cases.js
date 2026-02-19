@@ -56,15 +56,15 @@ export const simulationCases = [
   },
   {
     id: "case_10",
-    title: "Case 010: Partial Localization - Solitary Nodule",
-    serverFilename: "Case_010_Solitary_Partial.mha",
-    googleDriveId: "1_H9_pIKuJY7ZIuNFyfGtQWp2oRK43aBP" 
+    title: "Case 010: Clear Localization - Solitary Nodule",
+    serverFilename: "Case_010_Solitary_Clear.mha",
+    googleDriveId: "1t0DGSeCh1quz7z00F0G6eaNp8pGStRVs" 
   },
   {
     id: "case_11",
-    title: "Case 011: Indistinct Localization - 2 Nodules",
-    serverFilename: "Case_011_Bilateral_Indistinct.mha",
-    googleDriveId: "1EX3AZS00Ss_bc5dUoHjEnrqq2ANVCdam" 
+    title: "Case 011: Partial Localization - Solitary Nodule",
+    serverFilename: "Case_011_Solitary_Partial.mha",
+    googleDriveId: "18MkiftJpEsVOILJY5n26DMFRKDX75y3M" 
   },
   {
     id: "case_12",
@@ -122,9 +122,9 @@ export const simulationCases = [
   },
   {
     id: "case_21",
-    title: "Case 021: Indistinct Localization - Solitary Nodule",
-    serverFilename: "Case_021_Solitary_Indistinct.mha",
-    googleDriveId: "1X2R-lTkuBxrLSWkAuBfOeemXqA0N7tti" 
+    title: "Case 021: Clear Localization - Solitary Nodule",
+    serverFilename: "Case_021_Solitary_Clear.mha",
+    googleDriveId: "18HXDGRfOxlGAyjWoFUyKACpYWcv85PcM" 
   },
   {
     id: "case_22",
@@ -149,6 +149,72 @@ export const simulationCases = [
     title: "Case 025: No Nodule",
     serverFilename: "Case_025_No_Nodule.mha",
     googleDriveId: "1A7R2qV0q6f75QkU_aLvQ4NRsy8Fw69kj" 
+  },
+  {
+    id: "case_26",
+    title: "Case 026: No Nodule",
+    serverFilename: "Case_026_No_Nodule.mha",
+    googleDriveId: "1-vpWTDg9BdnFd-wFFvOXw1UvCsxBI1h5" 
+  },
+  {
+    id: "case_27",
+    title: "Case 027: No Nodule",
+    serverFilename: "Case_027_No_Nodule.mha",
+    googleDriveId: "14iYlWdCr7Ug8_CpstoqfN-Z9f2AuFBSY" 
+  },
+  {
+    id: "case_28",
+    title: "Case 028: No Nodule",
+    serverFilename: "Case_028_No_Nodule.mha",
+    googleDriveId: "1spcV9FntK0qV8C0yJ7VYnlc-_VFTymqE" 
+  },
+  {
+    id: "case_29",
+    title: "Case 029: No Nodule",
+    serverFilename: "Case_029_No_Nodule.mha",
+    googleDriveId: "1l-r8NYyx-8oPXMKgbk4F7NQO4i0AP20P" 
+  },
+  {
+    id: "case_30",
+    title: "Case 030: No Nodule",
+    serverFilename: "Case_030_No_Nodule.mha",
+    googleDriveId: "1td7zp4QZ_0Qp0SFLm0k81jsLYnXrYlTj" 
+  },
+  {
+    id: "case_31",
+    title: "Case 031: No Nodule",
+    serverFilename: "Case_031_No_Nodule.mha",
+    googleDriveId: "1ZQWpAqqd118E7XgXlhYiH7CtQXTytIGg" 
+  },
+  {
+    id: "case_32",
+    title: "Case 032: No Nodule",
+    serverFilename: "Case_032_No_Nodule.mha",
+    googleDriveId: "1bvXKf8MOseQH4veTMPcA5MC3MqE3GRVL" 
+  },
+  {
+    id: "case_33",
+    title: "Case 033: No Nodule",
+    serverFilename: "Case_033_No_Nodule.mha",
+    googleDriveId: "1BxUXEht_wdO-AodQCxRHvn3r2FVEABtF" 
+  },
+  {
+    id: "case_34",
+    title: "Case 034: No Nodule",
+    serverFilename: "Case_034_No_Nodule.mha",
+    googleDriveId: "1-bVKo6H5afEzgxH-jCp0SX8Wb9IFB53n" 
+  },
+  {
+    id: "case_35",
+    title: "Case 035: No Nodule",
+    serverFilename: "Case_035_No_Nodule.mha",
+    googleDriveId: "1DaUanfyA1UcZX12GNKFSEQMgfmWa8M1r" 
+  },
+  {
+    id: "case_36",
+    title: "Case 036: No Nodule",
+    serverFilename: "Case_036_No_Nodule.mha",
+    googleDriveId: "1b_Ujqq4hH14wA6c46XygWxAuMijg3Hmv" 
   },
 
   // WITHOUT NODULES
