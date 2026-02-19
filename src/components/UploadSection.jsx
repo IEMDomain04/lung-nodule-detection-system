@@ -168,59 +168,8 @@ export function UploadSection({
   return (
     <>
       <section>
-        {/* Results Block */}
-        {prediction && (
-          <div className="p-3 mb-2 bg-linear-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] rounded-lg border border-[#374151] space-y-2 shrink-0">
-            <div>
-              <p className="text-xs text-[#9CA3AF] mb-1">Prediction:</p>
-              <Badge
-                variant="outline"
-                className={`text-xs px-2 py-1 font-semibold ${badgeColor} w-full justify-center`}
-              >
-                {predictedClass}
-              </Badge>
-            </div>
-            <div>
-              <p className="text-xs text-[#9CA3AF] mb-1">Confidence:</p>
-              <div className="flex items-center gap-2">
-                <span className="text-base text-[#E5E7EB] font-bold min-w-14">
-                  {confPercent != null ? `${confPercent}%` : "--%"}
-                </span>
-                <div className="flex-1 bg-[#374151] rounded-full h-2.5 overflow-hidden">
-                  <div
-                    className={`${progressBarColor} h-full rounded-full transition-all duration-500`}
-                    style={{
-                      width: confPercent != null ? `${confPercent}%` : "0%",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Status */}
-        {previewUrl && !prediction && !loading && (
-          <div className="p-3 mb-4 bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-lg">
-            <p className="text-xs text-[#38BDF8] text-center leading-relaxed">
-              📷 <strong>Preview Mode</strong>
-              <br />
-              Click Classify to analyze
-            </p>
-          </div>
-        )}
-        {loading && (
-          <div className="p-3 mb-4 bg-[#F59E0B]/10 border border-[#F59E0B]/30 rounded-lg">
-            <p className="text-xs text-[#F59E0B] text-center leading-relaxed">
-              ⏳ <strong>Processing...</strong>
-              <br />
-              {prediction ? "Analyzing" : "Loading preview"}
-            </p>
-          </div>
-        )}
-
         {/* Upload and Classify Image */}
-        <div className="p-3 mb-4 bg-[#1F2937] border border-gray-700 shadow-none rounded-lg shrink-0 w-full flex flex-col">
+        <div className="p-3 mb-2 bg-[#1F2937] border border-gray-700 shadow-none rounded-lg shrink-0 w-full flex flex-col">
           <div className="space-y-3">
             <h3 className="text-xs font-semibold text-[#E5E7EB]">
               Upload & Controls
@@ -266,108 +215,164 @@ export function UploadSection({
           </div>
         </div>
 
-        {/* View Controls */}
-        {previewUrl && (
-          <div className="p-3 mb-4 bg-[#1F2937] rounded-lg border border-[#374151] space-y-1.5">
-            <h3 className="text-xs font-semibold text-[#E5E7EB] mb-2">
-              View Controls
-            </h3>
-
-            <Button
-              onClick={() => setZoom((prev) => Math.min(prev + 0.25, 5))}
-              size="sm"
-              variant="outline"
-              className="btn-controls w-full bg-[#1F2937] border-[#374151] text-[#E5E7EB] hover:bg-[#374151] hover:text-white active:scale-90 justify-start h-8 text-xs cursor-pointer"
-            >
-              <ZoomIn className="h-3 w-3 mr-1.5" />
-              Zoom In
-            </Button>
-
-            <Button
-              onClick={() => setZoom((prev) => Math.max(prev - 0.25, 0.5))}
-              size="sm"
-              variant="outline"
-              className="btn-controls w-full bg-[#1F2937] border-[#374151] text-[#E5E7EB] hover:bg-[#374151] hover:text-white active:scale-90 justify-start h-8 text-xs cursor-pointer"
-            >
-              <ZoomOut className="h-3 w-3 mr-1.5" />
-              Zoom Out
-            </Button>
-
-            <Button
-              onClick={handleResetView}
-              size="sm"
-              variant="outline"
-              className="btn-controls w-full bg-[#1F2937] border-[#374151] text-[#E5E7EB] hover:bg-[#374151] hover:text-white active:scale-90 justify-start h-8 text-xs cursor-pointer"
-            >
-              <Maximize2 className="h-3 w-3 mr-1.5" />
-              Reset View
-            </Button>
-
-            {/* Heatmap Toggle Button */}
-            {hasHeatmapData && (
-              <>
-                <div className="h-px bg-[#374151] my-2"></div>
-                <Button
-                  onClick={() => setShowHeatmap(!showHeatmap)}
-                  size="sm"
+            {/* Results Block */}
+        <div className="max-sm:flex max-sm:flex-col-reverse">
+          
+          {prediction && (
+            <div className="p-3 mb-2 bg-linear-to-b from-[#1E3A8A] via-[#1F2937] to-[#111827] rounded-lg border border-[#374151] space-y-2 shrink-0">
+              <div>
+                <p className="text-xs text-[#9CA3AF] mb-1">Prediction:</p>
+                <Badge
                   variant="outline"
-                  className={`btn-controls w-full justify-start h-8 text-xs cursor-pointer ${
-                    showHeatmap
-                      ? "bg-[#EF4444] border-[#EF4444] text-white hover:bg-[#DC2626]"
-                      : "bg-[#10B981] border-[#10B981] text-white hover:bg-[#059669]"
-                  }`}
+                  className={`text-xs px-2 py-1 font-semibold ${badgeColor} w-full justify-center`}
                 >
-                  {showHeatmap ? (
+                  {predictedClass}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-xs text-[#9CA3AF] mb-1">Confidence:</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-base text-[#E5E7EB] font-bold min-w-14">
+                    {confPercent != null ? `${confPercent}%` : "--%"}
+                  </span>
+                  <div className="flex-1 bg-[#374151] rounded-full h-2.5 overflow-hidden">
+                    <div
+                      className={`${progressBarColor} h-full rounded-full transition-all duration-500`}
+                      style={{
+                        width: confPercent != null ? `${confPercent}%` : "0%",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Status */}
+          {previewUrl && !prediction && !loading && (
+            <div className="p-3 mb-4 bg-[#0EA5E9]/10 border border-[#0EA5E9]/30 rounded-lg">
+              <p className="text-xs text-[#38BDF8] text-center leading-relaxed">
+                📷 <strong>Preview Mode</strong>
+                <br />
+                Click Classify to analyze
+              </p>
+            </div>
+          )}
+          {loading && (
+            <div className="p-3 mb-4 bg-[#F59E0B]/10 border border-[#F59E0B]/30 rounded-lg">
+              <p className="text-xs text-[#F59E0B] text-center leading-relaxed">
+                ⏳ <strong>Processing...</strong>
+                <br />
+                {prediction ? "Analyzing" : "Loading preview"}
+              </p>
+            </div>
+          )}
+
+          {/* View Controls */}
+          {previewUrl && (
+            <div className="p-3 mb-4 bg-[#1F2937] rounded-lg border border-[#374151] space-y-1.5">
+              <h3 className="text-xs font-semibold text-[#E5E7EB] mb-2">
+                View Controls
+              </h3>
+
+              <Button
+                onClick={() => setZoom((prev) => Math.min(prev + 0.25, 5))}
+                size="sm"
+                variant="outline"
+                className="btn-controls w-full bg-[#1F2937] border-[#374151] text-[#E5E7EB] hover:bg-[#374151] hover:text-white active:scale-90 justify-start h-8 text-xs cursor-pointer"
+              >
+                <ZoomIn className="h-3 w-3 mr-1.5" />
+                Zoom In
+              </Button>
+
+              <Button
+                onClick={() => setZoom((prev) => Math.max(prev - 0.25, 0.5))}
+                size="sm"
+                variant="outline"
+                className="btn-controls w-full bg-[#1F2937] border-[#374151] text-[#E5E7EB] hover:bg-[#374151] hover:text-white active:scale-90 justify-start h-8 text-xs cursor-pointer"
+              >
+                <ZoomOut className="h-3 w-3 mr-1.5" />
+                Zoom Out
+              </Button>
+
+              <Button
+                onClick={handleResetView}
+                size="sm"
+                variant="outline"
+                className="btn-controls w-full bg-[#1F2937] border-[#374151] text-[#E5E7EB] hover:bg-[#374151] hover:text-white active:scale-90 justify-start h-8 text-xs cursor-pointer"
+              >
+                <Maximize2 className="h-3 w-3 mr-1.5" />
+                Reset View
+              </Button>
+
+              {/* Heatmap Toggle Button */}
+              {hasHeatmapData && (
+                <>
+                  <div className="h-px bg-[#374151] my-2"></div>
+                  <Button
+                    onClick={() => setShowHeatmap(!showHeatmap)}
+                    size="sm"
+                    variant="outline"
+                    className={`btn-controls w-full justify-start h-8 text-xs cursor-pointer ${
+                      showHeatmap
+                        ? "bg-[#EF4444] border-[#EF4444] text-white hover:bg-[#DC2626]"
+                        : "bg-[#10B981] border-[#10B981] text-white hover:bg-[#059669]"
+                    }`}
+                  >
+                    {showHeatmap ? (
+                      <>
+                        <EyeOff className="h-3 w-3 mr-1.5" /> Hide Heatmap
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="h-3 w-3 mr-1.5" /> Show Heatmap
+                      </>
+                    )}
+                  </Button>
+                  {/* Selection Validation  */}
+                  {hasHeatmapData && (
                     <>
-                      <EyeOff className="h-3 w-3 mr-1.5" /> Hide Heatmap
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="h-3 w-3 mr-1.5" /> Show Heatmap
+                      {showHeatmap ? (
+                        <div className="space-y-1.5">
+                          <div className="flex justify-center items-center my-2">
+                            <LocateFixed className="text-red-500 h-5 w-5 font-bold mr-2" />
+                            <h1 className="font-bold text-red-300">
+                              Heatmap View
+                            </h1>
+                          </div>
+                          <p className="text-center text-xs font-light italic">
+                            Red/Yellow areas show attention
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-1.5">
+                          <div className="flex justify-center items-center my-2">
+                            <LocateFixed className="h-5 w-5 font-bold mr-2" />
+                            <h1 className="font-bold">Original View</h1>
+                          </div>
+                          <p className="text-center text-xs font-light italic">
+                            Unmodified X-ray
+                          </p>
+                        </div>
+                      )}
                     </>
                   )}
-                </Button>
-              </>
-            )}
+                </>
+              )}
 
-            <div className="pt-1.5 text-center">
-              <span className="text-[10px] text-[#9CA3AF]">
-                Zoom:{" "}
-                <span className="font-semibold text-[#E5E7EB]">
-                  {Math.round(zoom * 100)}%
+              <div className="pt-1.5 text-center">
+                <span className="text-[10px] text-[#9CA3AF]">
+                  Zoom:{" "}
+                  <span className="font-semibold text-[#E5E7EB]">
+                    {Math.round(zoom * 100)}%
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Selection Validation  */}
-        {hasHeatmapData && (
-          <>
-            {showHeatmap ? (
-              <div className="p-3 bg-[#1F2937] rounded-lg border border-[#374151] space-y-1.5">
-                <div className="flex justify-center items-center mb-2">
-                  <LocateFixed className="text-red-500 h-5 w-5 font-bold mr-2" />
-                  <h1 className="font-bold text-red-300">Heatmap View</h1>
-                </div>
-                <p className="text-center text-xs font-light italic">
-                  Red/Yellow areas show attention
-                </p>
-              </div>
-            ) : (
-              <div className="p-3 bg-[#1F2937] rounded-lg border border-[#374151] space-y-1.5">
-                <div className="flex justify-center items-center mb-2">
-                  <LocateFixed className="h-5 w-5 font-bold mr-2" />
-                  <h1 className="font-bold">Original View</h1>
-                </div>
-                <p className="text-center text-xs font-light italic">
-                  Unmodified X-ray
-                </p>
-              </div>
-            )}
-          </>
-        )}
-        {error && <p className="text-xs text-red-400 text-center">{error}</p>}
+          {error && <p className="text-xs text-red-400 text-center">{error}</p>}
+        </div>
       </section>
       <CloudLibraryModal
         isOpen={isLibraryOpen}
