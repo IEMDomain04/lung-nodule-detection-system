@@ -40,7 +40,6 @@ export function ClassificationOutput({
     let displayedW = clientWidth;
     let displayedH = clientHeight;
 
-    // 1. Calculate the exact pixel size of the image on the screen
     if (imgDims.w && imgDims.h) {
       const containerRatio = clientWidth / clientHeight;
       const imgRatio = imgDims.w / imgDims.h;
@@ -54,8 +53,6 @@ export function ClassificationOutput({
       }
     }
 
-    // 2. Allow dragging so the edge of the image stops exactly at the center of the container.
-    // This allows movement at 100% zoom, but prevents it from disappearing at 500% zoom!
     const maxX = (displayedW * currentZoom) / 2;
     const maxY = (displayedH * currentZoom) / 2;
 
@@ -65,7 +62,6 @@ export function ClassificationOutput({
     };
   };
 
-  // Re-clamp position automatically if the user zooms out
   useEffect(() => {
     setPosition((prevPos) => getClampedPosition(prevPos.x, prevPos.y, zoom));
   }, [zoom, imgDims]);
@@ -77,7 +73,8 @@ export function ClassificationOutput({
     const wheelHandler = (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoom((prev) => Math.min(Math.max(1, prev + delta), 5));
+      // 🔥 FIX: Changed Math.max(1, ...) back to Math.max(0.5, ...)
+      setZoom((prev) => Math.min(Math.max(0.5, prev + delta), 5));
     };
     container.addEventListener("wheel", wheelHandler, { passive: false });
     return () => container.removeEventListener("wheel", wheelHandler);
@@ -135,7 +132,8 @@ export function ClassificationOutput({
 
       setZoom((prevZoom) => {
         const newZoom = prevZoom * distanceRatio;
-        return Math.min(Math.max(1, newZoom), 5); 
+        // 🔥 FIX: Changed Math.max(1, ...) back to Math.max(0.5, ...)
+        return Math.min(Math.max(0.5, newZoom), 5); 
       });
 
       pinchDistanceRef.current = currentDistance;
