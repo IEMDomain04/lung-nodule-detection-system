@@ -169,7 +169,7 @@ export function UploadSection({
     <>
       <section>
         {/* Upload and Classify Image */}
-        <div className="p-3 mb-2 bg-[#1F2937] border border-gray-700 shadow-none rounded-lg shrink-0 w-full flex flex-col">
+        <div className="p-3 mb-3 bg-[#1F2937] border border-gray-700 shadow-none rounded-lg shrink-0 w-full flex flex-col">
           <div className="space-y-3">
             <h3 className="text-xs font-semibold text-[#E5E7EB]">
               Upload & Controls
