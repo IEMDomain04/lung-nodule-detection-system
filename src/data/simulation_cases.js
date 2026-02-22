@@ -216,7 +216,4 @@ export const simulationCases = [
     serverFilename: "Case_036_No_Nodule.mha",
     googleDriveId: "1b_Ujqq4hH14wA6c46XygWxAuMijg3Hmv" 
   },
-
-  // WITHOUT NODULES
-
 ];
