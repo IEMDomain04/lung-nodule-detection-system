@@ -10,6 +10,9 @@ An AI-powered web application for detecting lung nodules in chest X-ray images u
 Open PowerShell or Terminal and run:
 ```powershell
 git clone https://github.com/IEMDomain04/thoracic-disease-detection-system.git
+```
+
+```powershell
 cd thoracic-disease-detection-system
 ```
 
@@ -114,18 +117,6 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 ```
 
 You're good to go!
-
-## 🎓 Educational Use
-
-This repository is developed for **educational purposes** and as part of a **thesis presentation**. It demonstrates:
-- Medical image processing with deep learning
-- Full-stack web application development
-- Integration of PyTorch models with React frontends
-- Weakly Supervised Object Detection (WSOD) techniques
-
-**⚠️ Disclaimer:** This system is for research and educational purposes only. It is **not** intended for clinical diagnosis or medical use.
-
----
 
 ## 📄 License
 
