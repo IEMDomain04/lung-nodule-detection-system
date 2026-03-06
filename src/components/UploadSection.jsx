@@ -101,7 +101,7 @@ export function UploadSection({
 
     const cloudFileObj = {
       name: caseItem.title,
-      googleDriveId: caseItem.googleDriveId,
+      caseId: caseItem.id, // 🔥 Only saving the alias ("case_01")
       isCloud: true,
     };
     setSelectedFile(cloudFileObj);
@@ -110,7 +110,7 @@ export function UploadSection({
       const response = await fetch(`${API_BASE}/preview_from_library`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file_id: caseItem.googleDriveId }),
+        body: JSON.stringify({ case_id: caseItem.id }), // 🔥 Sending the alias
       });
       const result = await response.json();
       if (result.preview_image) setPreviewUrl(result.preview_image);
@@ -136,7 +136,7 @@ export function UploadSection({
         response = await fetch(`${API_BASE}/predict_from_library`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ file_id: selectedFile.googleDriveId }),
+          body: JSON.stringify({ case_id: selectedFile.caseId }), // 🔥 Sending the alias
         });
       } else {
         const formData = new FormData();
@@ -152,12 +152,9 @@ export function UploadSection({
 
       setPrediction(result);
 
-      // Only set it if we somehow don't have a preview yet
       if (!previewUrl && result.preview_image) {
         setPreviewUrl(result.preview_image);
       }
-
-      // if (setShowRatingPopup) setShowRatingPopup(true);
     } catch (err) {
       setError("Prediction failed.");
     } finally {
