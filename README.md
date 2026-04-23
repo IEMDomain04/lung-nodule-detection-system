@@ -2,6 +2,8 @@
 
 An AI-powered web application for detecting lung nodules in chest X-ray images using deep learning. This system provides automated classification with confidence scores and spatial attention heatmaps to visualize nodule locations.
 
+This project was developed as part of a thesis, published for a Q1 journal, and is currently available as a preprint: [Press me! To see Preprint Paper.](https://www.preprints.org/manuscript/202604.0738)
+
 ---
 
 ## 📥 Installation
@@ -120,7 +122,8 @@ You're good to go!
 
 ## 📄 License
 
-This project is a thesis for 
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
+See [LICENSE](LICENSE) for the full license text.
 
 ---
 
