@@ -93,7 +93,7 @@ cd backend
 
 **2. Activate virtual environment:**
 ```powershell
-.venv\Scripts\Activate.ps1
+.venv\Scripts\activate
 ```
 
 **3. Choose your model and start the server:**
@@ -120,7 +120,7 @@ You're good to go!
 
 ## 📄 License
 
-This project is for educational purposes. Please consult the repository owner before using it in production or commercial applications.
+This project is a thesis for 
 
 ---
 
